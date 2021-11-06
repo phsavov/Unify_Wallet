@@ -26,7 +26,7 @@ public class UserDatabase {
     }
 
     public boolean checkPassword(String password) throws SQLException {
-
+        return true;
     }
 
 
