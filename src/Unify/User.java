@@ -23,6 +23,7 @@ import java.util.List;
 public class User {
 
     private static String apiKey = "29ace529-6a3e-4963-84ca-05a92b721ecd";
+    private String accountID;
     private String username;
     private String password;
     private String spendingPassword;
@@ -30,7 +31,7 @@ public class User {
     private int accountTotal;
 
 
-    public User(String username, String password) {
+    public User(String accountID, String username, String password, String spendingPassword, int accountTotal) {
         if (username.equals(null) && password.equals(null)){
 
         }
