@@ -39,14 +39,17 @@ public class UserDatabase {
         statement = connection.createStatement();
         String query = "Select * from Users where userName = ? and password = ?";
         PreparedStatement prepStatement = connection.prepareStatement(query);
-        prepStatement.setString(1,username);
-        prepStatement.setString(2,password);
+        prepStatement.setString(1, username);
+        prepStatement.setString(2, password);
         ResultSet result = prepStatement.executeQuery();
         result.next();
-        if (result.getString(6).equals(username) && result.getString(7).equals(password)){
+        if (result.getString(6).equals(username) && result.getString(7).equals(password)) {
             return true;
         }
         return false;
+    }
+    public boolean checkPassword(String password) throws SQLException {
+        return true;
     }
 
 
