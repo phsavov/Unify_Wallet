@@ -10,6 +10,7 @@ public class TestHomePage extends JFrame {
     private JButton loginButton;
     private JLabel imageLogo;
     private JPanel homePagePanel;
+    public InformationController informationController;
 
     public TestHomePage(String title) {
         super(title);   // Calls parent (JFrame) constructor
