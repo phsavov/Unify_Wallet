@@ -17,14 +17,31 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class User {
 
+    /**
+     * Main function to run the whole program
+     * @param args
+     * @throws SQLException
+     */
+    public static void main(String[] args) throws SQLException {
+
+        // This is to test the test pages
+        //JFrame frame = new TestHomePage("Unify");
+        UserDatabase db = new UserDatabase();
+        db.nextAccountId();
+        HomePage home = new HomePage("Unify");
+        home.setVisible(true);
+
+    }
+
     private static String apiKey = "29ace529-6a3e-4963-84ca-05a92b721ecd";
-    private String accountID;
+    private int accountID;
     private String username;
     private String password;
     private String spendingPassword;
@@ -33,7 +50,15 @@ public class User {
     private String address;
 
 
-    public User(String accountID, String username, String password, String spendingPassword, double accountTotal) {
+    /**
+     * Default constructor
+     * @param accountID
+     * @param username
+     * @param password
+     * @param spendingPassword
+     * @param accountTotal
+     */
+    public User(int accountID, String username, String password, String spendingPassword, double accountTotal) {
         this.accountID = accountID;
         this.username = username;
         this.password = password;
@@ -41,37 +66,32 @@ public class User {
         this.accountTotal = accountTotal;
     }
 
-    public void createAccount(){
-
-    }
-
     public String getUsername() { return username; }
 
-    public double getAccountTotal() {
-        return accountTotal;
-    }
+    public double getAccountTotal() {return accountTotal; }
 
-    public void setAccountTotal(double accountTotal) {
-        this.accountTotal = accountTotal;
-    }
+    public void setAccountTotal(double accountTotal) { this.accountTotal = accountTotal; }
 
-    public String getAccountID() {
-        return accountID;
-    }
+    public int getAccountID() { return accountID; }
 
-    public void setAddress() {
-        address = generateAddress();
-    }
+    public void setAddress() { address = generateAddress(); }
 
     public String getAddress(){
+        address = generateAddress();
         return address;
     }
 
-    public void setMnemonicPhrase(){
-        mnemonicPhrase = generateMnemonicPhrase();
-    }
+    public void setMnemonicPhrase() { mnemonicPhrase = generateMnemonicPhrase(); }
 
-    public String generateMnemonicPhrase(){
+    public String getPassword() { return password; }
+
+    public String getSpendingPassword() { return spendingPassword; }
+
+    /**
+     * Creates a random string of characters for the mnemonic phrase
+     * @return phrase: String
+     */
+    private String generateMnemonicPhrase(){
         String phrase = "";
         char[] alphabet = new char[26];
         int character = 65;
@@ -86,41 +106,49 @@ public class User {
         return phrase;
     }
 
-
-    public String generateAddress(){
+    /**
+     * Creates an address that has length of 8 characters
+     * @return address: String
+     */
+    private String generateAddress(){
         Random random = new Random();
         int random1 = random.nextInt(1000, 5001);
         int random2 = random.nextInt(1000, 5001);
-        String address = getAccountID()+'.'+String.valueOf(random1)+'.'+String.valueOf(random2);
+        String address = String.valueOf(accountID) + '.' + String.valueOf(random1) + '.' + String.valueOf(random2);
         return address;
     }
 
-
+    /**
+     * Gets the current cardano market price in USD
+     * @return price: Double
+     */
     public double currentADAMarketPrice(){
 
         String uri = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
+        Double price = -1.0;
 
-        /* CoinMarketCap api query parameters */
+        // CoinMarketCap api query parameters
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         parameters.add(new BasicNameValuePair("symbol","ADA"));
         parameters.add(new BasicNameValuePair("convert","USD"));
 
         try {
             String result = makeAPICall(uri, parameters);
-            System.out.println(result);
 
-            /* Serialize the result of the api call to a JSON object and get the current market price */
+            // Serialize the result of the api call to a JSON object and get the current market price
             String jsonString = result;
-            JSONObject obj = new JSONObject(jsonString);
-            Double price = obj.getJSONObject("data").getJSONObject("ADA").getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            System.out.println(price);
+            JSONObject obj    = new JSONObject(jsonString);
+            price             = obj.getJSONObject("data").getJSONObject("ADA").getJSONObject("quote").getJSONObject("USD").getDouble("price");
+            return price;
         } catch (IOException e) {
-            System.out.println("Error: cannont access content - " + e.toString());
+            System.out.println("Error: cannot access content - " + e.toString());
+            e.printStackTrace();
         } catch (URISyntaxException e) {
             System.out.println("Error: Invalid URL " + e.toString());
+            e.printStackTrace();
         }
+        return price;
     }
-
 
     /**
      * Builds the API call and returns a String with the response

@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TestLoginPage extends JFrame{
+public class LoginPage extends JFrame{
     private JPanel loginPanel;
     private JTextField usernameField;
     private JPasswordField passwordField;
@@ -12,14 +12,20 @@ public class TestLoginPage extends JFrame{
     private JLabel usernameLabel;
     private JButton loginButton;
     private JLabel passwordLable;
+    private JButton createButton;
+
     public String username;
     private char[] passwordArray;
     public String password;
 
+    // Default Constructor
+    public LoginPage(){ username = "default"; password = "defaultPass"; }
 
-    public TestLoginPage(){ username = "default"; password = "defaultPass"; }
-
-    public TestLoginPage(String title) {
+    /**
+     * Initialize the Login Page window
+     * @param title: String
+     */
+    public LoginPage(String title) {
         super(title);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,10 +45,6 @@ public class TestLoginPage extends JFrame{
                     passwordArray = passwordField.getPassword();
                     password = String.valueOf(passwordArray);
 
-                    // Call constructor
-                    //System.out.println(informationController.getUserName());
-                    //System.out.println(informationController.getPassword());
-
                     // Authentication of the user inside a try catch
                     try {
                         UserDatabase userDatabase = new UserDatabase();
@@ -50,47 +52,34 @@ public class TestLoginPage extends JFrame{
                         while (!loggedIn) {
                             if (userDatabase.checkCredentials(username, password)) {
                                 loggedIn = true;
-                                // Pop up window confirming successful login or failed login
-                                /*JDialog dia = new JDialog(TestLoginPage.this);
-                                JLabel l = new JLabel("Logged in Successfully");
-                                dia.add(l);
-                                dia.setSize(420, 420);
-                                dia.setVisible(true);*/
 
-                                TestLoginPage.super.dispose();                              // Disposes the login page window when auth passes
+                                // Pop up window confirming successful login or failed login
+                                JOptionPane.showMessageDialog(createButton, "Login Successful");
+
+                                // Disposes the login page window when auth passes
+                                LoginPage.super.dispose();
                                 // Creates the transaction page
                                 mainPage main = new mainPage("Unify",  userDatabase.getUserInfo(username, password));
 
                             } else {
-                                JDialog dia = new JDialog(TestLoginPage.this);
-                                JLabel l = new JLabel("Login Failed");
-                                dia.add(l);
-                                dia.setSize(420, 420);
-                                dia.setVisible(true);
+                                // Pop up window confirming login failed
+                                JOptionPane.showMessageDialog(createButton, "Login Failed");
                             }
                         }
                     } catch (Exception ex) {
-                        System.out.println(ex);
+                        ex.printStackTrace();
                     }
                 }
             }
         });
     }
 
-    // Overloaded constructor to handle data transfer to the Information Controller class
-    //public TestLoginPage(InformationController infoc) { this.informationController = infoc; }
-    public void TestLoginPage(String title, InformationController infoc) {
-        //super(title);
-        //this.informationController = infoc;
-    }
-
-    /** Gets the password from the password field text
-     *  Returns a string object
-     **/
+    /**
+     * Gets the password from the password field text
+     * @return password: String
+     */
     public String getPassword(){
         password = String.valueOf(passwordArray);
         return password;
     }
-
-
 }

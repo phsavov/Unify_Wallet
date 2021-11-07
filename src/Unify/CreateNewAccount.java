@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+// TODO connect this gui to user database
 public class CreateNewAccount extends JFrame{
 
     private JPanel createAccountPanel;
@@ -30,10 +31,16 @@ public class CreateNewAccount extends JFrame{
     public static String spendPassConfirm;
     public static String mnemonicCode;
 
-    //public static InformationController informationController;
 
-    public CreateNewAccount(){ username = "default"; password = "defaultPass"; spendPassword = "defaultPass";}
+    /**
+      * Default constructor
+      */
+    public CreateNewAccount() { username = "default"; password = "defaultPass"; spendPassword = "defaultPass"; }
 
+    /**
+     * Initialize the create new account window
+     * @param title: String
+     */
     public CreateNewAccount(String title){
         super(title);
 
@@ -48,7 +55,7 @@ public class CreateNewAccount extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // send username and password to the Information Controller class
+                //Get user's username, password, and spending passwords + confirmations
                 if (e.getSource() == createButton) {
                     username = usernameField.getText();
                     passwordArray = passwordField.getPassword();
@@ -61,6 +68,7 @@ public class CreateNewAccount extends JFrame{
                     spendPassConfirm = String.valueOf(spendPassConArray);
                 }
 
+                //Have user reenter passwords until they match with confirmed
                 if(!password.equals(passConfirm)){
                     JOptionPane.showMessageDialog(createButton, "Passwords do not match");
                 }
@@ -68,13 +76,20 @@ public class CreateNewAccount extends JFrame{
                     JOptionPane.showMessageDialog(createButton, "Spend Passwords do not match");
                 }
                 else{
-                    //Change with adding new user to database
-                    //Send user to main
-                    JDialog dia = new JDialog(CreateNewAccount.this);
-                    JLabel l = new JLabel("New Account Created");
-                    dia.add(l);
-                    dia.setSize(420, 420);
-                    dia.setVisible(true);
+                    try {
+                        // Adding a new user to the database
+                        UserDatabase userDatabase = new UserDatabase();
+                        User user = new User(userDatabase.nextAccountId(), username, password, spendPassword, 0);
+                        userDatabase.updateUserDB(user);
+
+                        JOptionPane.showMessageDialog(createButton, "Created account!");
+
+                        CreateNewAccount.super.dispose();
+                        HomePage homePage = new HomePage("Unify");
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
