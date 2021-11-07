@@ -78,7 +78,7 @@ public class UserDatabase {
         ResultSet result = prep.executeQuery();
         result.next(); //goes to the next result
 
-        System.out.println(result.getInt(1));
+        //System.out.println(result.getInt(1));
         newID = result.getInt(1) + 1;
         return newID;
     }

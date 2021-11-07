@@ -34,30 +34,37 @@ public class TransactionDatabase {
     public boolean sendingCrypto(double amount, String address, User sendingUser) throws SQLException {
         Statement send = sending.createStatement();
         Statement receive = receiving.createStatement();
-        String getSending = "update Users set accoutTotal = ? where accountID = ?";
+        String getSending = "update Users set accountTotal = ? where accountID = ?";
         PreparedStatement prep1 = sending.prepareStatement(getSending);
+        
+        // Check if sending amount is more than account balance
+        if ((sendingUser.getAccountTotal() - amount) < 0) {
+            System.out.println("Sending amount more than account balance!");
+            return false;
+        }
+        
         prep1.setString(1, String.valueOf((sendingUser.getAccountTotal() - amount)));
         prep1.setString(2, String.valueOf(sendingUser.getAccountID()));
         prep1.executeUpdate();
         sendingUser.setAccountTotal(sendingUser.getAccountTotal() - amount);
 
-        String getReceivingUser = "Select * from Users where receivingAdress = ?";
+        String getReceivingUser = "Select * from Users where receivingAddress = ?";
         PreparedStatement prep2 = receiving.prepareStatement(getReceivingUser);
         prep2.setString(1, address);
         ResultSet tempUser = prep2.executeQuery();
         tempUser.next();
 
-        User temporary  = new User(tempUser.getInt(1), tempUser.getString(6),
-                tempUser.getString(7), tempUser.getString(8), tempUser.getDouble(5));
+        User temporary  = new User(tempUser.getInt(1), tempUser.getString(4),
+                tempUser.getString(5), tempUser.getString(6), tempUser.getDouble(3));
 
-        String getCrypto = "update Users set accoutTotal = ? where accountID = ?";
+        String getCrypto = "update Users set accountTotal = ? where accountID = ?";
         prep2 = receiving.prepareStatement(getCrypto);
         prep2.setString(1, String.valueOf((temporary.getAccountTotal() + amount)));
         prep2.setString(2, String.valueOf(sendingUser.getAccountID()));
         prep1.executeUpdate();
 
-        updateTransactionDB(sendingUser, temporary);
-        
+        updateTransactionDB(sendingUser, temporary, amount);
+
         sendingUser.setAccountTotal(sendingUser.getAccountTotal() - amount);
 
         return true;
@@ -69,22 +76,27 @@ public class TransactionDatabase {
      * @param receivingUser: User
      * @throws SQLException
      */
-    public void updateTransactionDB(User sendingUser, User receivingUser) throws SQLException {
+    public void updateTransactionDB(User sendingUser, User receivingUser, double amount) throws SQLException {
+
+
         Statement update = transaction.createStatement();
         String query = "insert into Transactions (accountID, transactionType, ammount, receievingAccountID) " +
                 "values (?, ?, ?, ?);";
         PreparedStatement statement = transaction.prepareStatement(query);
         statement.setString(1, String.valueOf(sendingUser.getAccountID()));
         statement.setString(2, "SENDING");
-        statement.setString(3, String.valueOf(sendingUser.getAccountTotal()));
+        statement.setString(3, String.valueOf(amount));
         statement.setString(4, String.valueOf(receivingUser.getAccountID()));
         statement.executeUpdate();
 
-        PreparedStatement newStatement = transaction.prepareStatement(query);
-        statement.setString(1, String.valueOf(receivingUser.getAccountID()));
-        statement.setString(2, "RECEIVING");
-        statement.setString(3, String.valueOf(sendingUser.getAccountTotal()));
-        statement.setString(4, String.valueOf(sendingUser.getAccountID()));
+        String query2 = "insert into Transactions (accountID, transactionType, ammount, receievingAccountID) " +
+                "values (?, ?, ?, ?);";
+
+        PreparedStatement newStatement = transaction.prepareStatement(query2);
+        newStatement.setString(1, String.valueOf(receivingUser.getAccountID()));
+        newStatement.setString(2, "RECEIVING");
+        newStatement.setString(3, String.valueOf(amount));
+        newStatement.setString(4, String.valueOf(sendingUser.getAccountID()));
         newStatement.executeUpdate(query);
     }
 }
