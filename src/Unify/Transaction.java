@@ -1,5 +1,6 @@
 package Unify;
 import java.security.PublicKey;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Transaction {
@@ -15,11 +16,12 @@ public class Transaction {
     public ArrayList<Receive>  input  = new ArrayList<Receive>();
     public ArrayList<Send>     output = new ArrayList<Send>();
 
+    private TransactionDatabase transaction;
 
     //How many transactions have been created
     private static int transactionCount = 0;
 
-    //Constructor
+    // Constructor
     public Transaction(PublicKey from, PublicKey to, float val, ArrayList<Receive> input)
     {
         this.sender    = from;
@@ -28,20 +30,28 @@ public class Transaction {
         this.input     = input;
     }
 
+    // Default constructor that does...
     public Transaction(String[] args) {
     }
 
-    public Transaction() {
+    // Constructor that creates a new instance of the transaction database
+    public Transaction() throws SQLException {
+        transaction = new TransactionDatabase();
     }
 
-    public boolean processTransaction()
-    {
-
-        //Gather inputs
-        /*for (Receive i : inputs){
-            i.unspentTransactionOutput = Main.
-        }*/
-        return true;
+    /**
+     * Query the database and ...
+     * @param from: User
+     * @param toAddress: String
+     * @param amount: double
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean processSendingTransaction(User from, String toAddress, double amount) throws SQLException {
+        if (transaction.sendingCrypto(amount, toAddress, from)){
+            return true;
+        }
+        return false;
     }
 
 }
