@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class User {
 
@@ -27,23 +28,75 @@ public class User {
     private String username;
     private String password;
     private String spendingPassword;
-    private final String mnemonicPhrase;
-    private int accountTotal;
+    private String mnemonicPhrase;
+    private double accountTotal;
+    private String address;
 
 
-    public User(String accountID, String username, String password, String spendingPassword, int accountTotal) {
-        if (username.equals(null) && password.equals(null)){
-
-        }
-        mnemonicPhrase = null;
+    public User(String accountID, String username, String password, String spendingPassword, double accountTotal) {
+        this.accountID = accountID;
+        this.username = username;
+        this.password = password;
+        this.spendingPassword = spendingPassword;
+        this.accountTotal = accountTotal;
     }
 
     public void createAccount(){
 
     }
 
-    
-    public void currentADAMarketPrice(){
+    public String getUsername() { return username; }
+
+    public double getAccountTotal() {
+        return accountTotal;
+    }
+
+    public void setAccountTotal(double accountTotal) {
+        this.accountTotal = accountTotal;
+    }
+
+    public String getAccountID() {
+        return accountID;
+    }
+
+    public void setAddress() {
+        address = generateAddress();
+    }
+
+    public String getAddress(){
+        return address;
+    }
+
+    public void setMnemonicPhrase(){
+        mnemonicPhrase = generateMnemonicPhrase();
+    }
+
+    public String generateMnemonicPhrase(){
+        String phrase = "";
+        char[] alphabet = new char[26];
+        int character = 65;
+        for (int i = 0; i < 26; i++){
+            alphabet[i] = (char) character;
+        }
+        Random random = new Random();
+        for (int i = 0; i < 5; i++){
+            phrase = phrase + alphabet[random.nextInt(0,26)];
+        }
+
+        return phrase;
+    }
+
+
+    public String generateAddress(){
+        Random random = new Random();
+        int random1 = random.nextInt(1000, 5001);
+        int random2 = random.nextInt(1000, 5001);
+        String address = getAccountID()+'.'+String.valueOf(random1)+'.'+String.valueOf(random2);
+        return address;
+    }
+
+
+    public double currentADAMarketPrice(){
 
         String uri = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
 

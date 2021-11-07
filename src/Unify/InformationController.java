@@ -25,6 +25,7 @@ public class InformationController {
 
     public String getPassword(){
         password = testLoginPage.getPassword();
+        password = testLoginPage.password;
         return password;
     }
 

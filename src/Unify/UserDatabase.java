@@ -17,9 +17,14 @@ public class UserDatabase {
         prepStatement.setString(2,password);
         ResultSet result = prepStatement.executeQuery();
         result.next();
-        
-        return new User(result.getString(1), result.getString(6), result.getString(7), 
-                result.getString(8), result.getInt(5));
+
+        String accountID = result.getString(1);
+        String userName = result.getString(6);
+        String pass = result.getString(7);
+        String spendPass = result.getString(8);
+        Double total = result.getDouble(5);
+
+        return new User(accountID, userName, pass, spendPass, total);
     }
 
     public boolean checkUsername(String username) throws SQLException {
@@ -35,7 +40,7 @@ public class UserDatabase {
         return false;
     }
 
-    public boolean checkPassword(String username, String password) throws SQLException {
+    public boolean checkCredentials(String username, String password) throws SQLException {
         statement = connection.createStatement();
         String query = "Select * from Users where userName = ? and password = ?";
         PreparedStatement prepStatement = connection.prepareStatement(query);
@@ -48,10 +53,5 @@ public class UserDatabase {
         }
         return false;
     }
-    public boolean checkPassword(String password) throws SQLException {
-        return true;
-    }
-
-
 
 }

@@ -10,14 +10,14 @@ public class TestLoginPage extends JFrame{
     private JPasswordField passwordField;
     private JLabel titleLabel;
     private JLabel usernameLabel;
-    private JLabel passwordLabel;
     private JButton loginButton;
+    private JLabel passwordLable;
     public String username;
-    public char[] passwordArray;
+    private char[] passwordArray;
     public String password;
 
 
-    private InformationController informationController;
+    public TestLoginPage(){ username = "default"; password = "defaultPass"; }
 
     public TestLoginPage(String title) {
         super(title);
@@ -37,11 +37,41 @@ public class TestLoginPage extends JFrame{
                 if (e.getSource() == loginButton) {
                     username = usernameField.getText();
                     passwordArray = passwordField.getPassword();
-                    JDialog dia = new JDialog(TestLoginPage.this);
-                    JLabel l = new JLabel("this is the dialog window");
-                    dia.add(l);
-                    dia.setSize(420, 420);
-                    dia.setVisible(true);
+                    password = String.valueOf(passwordArray);
+
+                    // Call constructor
+                    //System.out.println(informationController.getUserName());
+                    //System.out.println(informationController.getPassword());
+
+                    // Authentication of the user inside a try catch
+                    try {
+                        UserDatabase userDatabase = new UserDatabase();
+                        boolean loggedIn = false;
+                        while (!loggedIn) {
+                            if (userDatabase.checkCredentials(username, password)) {
+                                loggedIn = true;
+                                // Pop up window confirming successful login or failed login
+                                /*JDialog dia = new JDialog(TestLoginPage.this);
+                                JLabel l = new JLabel("Logged in Successfully");
+                                dia.add(l);
+                                dia.setSize(420, 420);
+                                dia.setVisible(true);*/
+
+                                TestLoginPage.super.dispose();                              // Disposes the login page window when auth passes
+                                // Creates the transaction page
+                                mainPage main = new mainPage("Unify",  userDatabase.getUserInfo(username, password));
+
+                            } else {
+                                JDialog dia = new JDialog(TestLoginPage.this);
+                                JLabel l = new JLabel("Login Failed");
+                                dia.add(l);
+                                dia.setSize(420, 420);
+                                dia.setVisible(true);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
                 }
             }
         });
@@ -49,6 +79,10 @@ public class TestLoginPage extends JFrame{
 
     // Overloaded constructor to handle data transfer to the Information Controller class
     //public TestLoginPage(InformationController infoc) { this.informationController = infoc; }
+    public void TestLoginPage(String title, InformationController infoc) {
+        //super(title);
+        //this.informationController = infoc;
+    }
 
     /** Gets the password from the password field text
      *  Returns a string object
@@ -57,5 +91,6 @@ public class TestLoginPage extends JFrame{
         password = String.valueOf(passwordArray);
         return password;
     }
+
 
 }
