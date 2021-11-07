@@ -5,7 +5,7 @@ import java.sql.*;
 public class TransactionDatabase {
 
     Connection sending = DriverManager.getConnection("jdbc:sqlserver://unify-ledger.database.windows.net:1433;database=User;user=phsavov@unify-ledger;password=PhiLeTo2001BL;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
-    Connection receiving = DriverManager.getConnection("jdbc:sqlserver://unify-ledger.database.windows.net:1433;database=User;user=phsavov@unify-ledger;password=PhiLeTo2001BL;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
+    //Connection receiving = DriverManager.getConnection("jdbc:sqlserver://unify-ledger.database.windows.net:1433;database=User;user=phsavov@unify-ledger;password=PhiLeTo2001BL;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
     Connection transaction = DriverManager.getConnection("jdbc:sqlserver://unify-ledger.database.windows.net:1433;database=Ledger;user=phsavov@unify-ledger;password=PhiLeTo2001BL;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
 
     private double amount;
@@ -32,24 +32,25 @@ public class TransactionDatabase {
      * @throws SQLException
      */
     public boolean sendingCrypto(double amount, String address, User sendingUser) throws SQLException {
+
         Statement send = sending.createStatement();
-        Statement receive = receiving.createStatement();
+        //Statement receive = receiving.createStatement();
         String getSending = "update Users set accountTotal = ? where accountID = ?";
         PreparedStatement prep1 = sending.prepareStatement(getSending);
-        
+
         // Check if sending amount is more than account balance
         if ((sendingUser.getAccountTotal() - amount) < 0) {
             System.out.println("Sending amount more than account balance!");
             return false;
         }
-        
+
         prep1.setString(1, String.valueOf((sendingUser.getAccountTotal() - amount)));
         prep1.setString(2, String.valueOf(sendingUser.getAccountID()));
         prep1.executeUpdate();
         sendingUser.setAccountTotal(sendingUser.getAccountTotal() - amount);
 
         String getReceivingUser = "Select * from Users where receivingAddress = ?";
-        PreparedStatement prep2 = receiving.prepareStatement(getReceivingUser);
+        PreparedStatement prep2 = sending.prepareStatement(getReceivingUser);
         prep2.setString(1, address);
         ResultSet tempUser = prep2.executeQuery();
         tempUser.next();
@@ -58,10 +59,10 @@ public class TransactionDatabase {
                 tempUser.getString(5), tempUser.getString(6), tempUser.getDouble(3));
 
         String getCrypto = "update Users set accountTotal = ? where accountID = ?";
-        prep2 = receiving.prepareStatement(getCrypto);
+        prep2 = sending.prepareStatement(getCrypto);
         prep2.setString(1, String.valueOf((temporary.getAccountTotal() + amount)));
         prep2.setString(2, String.valueOf(sendingUser.getAccountID()));
-        prep1.executeUpdate();
+        prep2.executeUpdate();
 
         updateTransactionDB(sendingUser, temporary, amount);
 
@@ -97,6 +98,6 @@ public class TransactionDatabase {
         newStatement.setString(2, "RECEIVING");
         newStatement.setString(3, String.valueOf(amount));
         newStatement.setString(4, String.valueOf(sendingUser.getAccountID()));
-        newStatement.executeUpdate(query);
+        newStatement.executeUpdate();
     }
 }

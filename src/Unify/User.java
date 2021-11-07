@@ -66,6 +66,11 @@ public class User {
         this.accountTotal = accountTotal;
     }
 
+    public void updateTotal() throws SQLException {
+        UserDatabase database = new UserDatabase();
+        setAccountTotal(database.getTotal(getAccountID()));
+    }
+
     public String getUsername() { return username; }
 
     public double getAccountTotal() {return accountTotal; }

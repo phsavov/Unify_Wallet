@@ -148,4 +148,21 @@ public class UserDatabase {
         prep.executeUpdate();
         return true;
     }
+
+    /**
+     *
+     * @param accountID
+     * @return
+     * @throws SQLException
+     */
+
+    public double getTotal(int accountID) throws SQLException {
+        statement = connection.createStatement();
+        String query = "select * from Users where accountID = ?";
+        PreparedStatement prep = connection.prepareStatement(query);
+        prep.setString(1, String.valueOf(accountID));
+        ResultSet set = prep.executeQuery();
+        set.next();
+        return set.getDouble(3);
+    }
 }

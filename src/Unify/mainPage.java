@@ -58,6 +58,11 @@ public class mainPage extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == refreshButton){
+                    try {
+                        user.updateTotal();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                     userTotal.setText(String.valueOf(user.getAccountTotal())+" ADA");
                     price.setText("$"+String.valueOf(user.currentADAMarketPrice()));
                     setVisible(true);
