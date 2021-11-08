@@ -35,7 +35,7 @@ public class TransactionDatabase {
 
         Statement send = sending.createStatement();
         //Statement receive = receiving.createStatement();
-        String getSending = "update Users set accountTotal = ? where accountID = ?";
+        String getSending = "update Users set accountTotal= ? where accountID = ?";
         PreparedStatement prep1 = sending.prepareStatement(getSending);
 
         // Check if sending amount is more than account balance
@@ -43,8 +43,8 @@ public class TransactionDatabase {
             System.out.println("Sending amount more than account balance!");
             return false;
         }
-
-        prep1.setString(1, String.valueOf((sendingUser.getAccountTotal() - amount)));
+        double newTotal = sendingUser.getAccountTotal() - amount;
+        prep1.setString(1, String.valueOf((newTotal)));
         prep1.setString(2, String.valueOf(sendingUser.getAccountID()));
         prep1.executeUpdate();
         sendingUser.setAccountTotal(sendingUser.getAccountTotal() - amount);
@@ -58,15 +58,15 @@ public class TransactionDatabase {
         User temporary  = new User(tempUser.getInt(1), tempUser.getString(4),
                 tempUser.getString(5), tempUser.getString(6), tempUser.getDouble(3));
 
-        String getCrypto = "update Users set accountTotal = ? where accountID = ?";
+        String getCrypto = "update Users set accountTotal= ? where accountID = ?";
         prep2 = sending.prepareStatement(getCrypto);
-        prep2.setString(1, String.valueOf((temporary.getAccountTotal() + amount)));
-        prep2.setString(2, String.valueOf(sendingUser.getAccountID()));
+        newTotal = temporary.getAccountTotal() + amount;
+        prep2.setString(1, String.valueOf((newTotal)));
+        prep2.setString(2, String.valueOf(temporary.getAccountID()));
         prep2.executeUpdate();
 
         updateTransactionDB(sendingUser, temporary, amount);
 
-        sendingUser.setAccountTotal(sendingUser.getAccountTotal() - amount);
 
         return true;
     }
