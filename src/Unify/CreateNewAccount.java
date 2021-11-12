@@ -51,6 +51,11 @@ public class CreateNewAccount extends JFrame{
         this.setVisible(true);
         this.pack();
 
+        /**
+         * creating an action for when the crete button is pressed
+         * the gui reads in the new account info and then sends the information to the
+         * database to add the account
+         */
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -1,6 +1,11 @@
 package Unify;
 
 /* Apache HTTPComponents ver 4.5.13 */
+/**
+ * these imports are from https://mvnrepository.com/artifact/org.json/json/20210307
+ * this is se that we can get the current ADA price in our desktop application application
+ */
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -25,16 +30,13 @@ import java.util.Random;
 public class User {
 
     /**
-     * Main function to run the whole program
+     * Main function that will start off the program by opening our firs page
      * @param args
      * @throws SQLException
      */
     public static void main(String[] args) throws SQLException {
 
-        // This is to test the test pages
-        //JFrame frame = new TestHomePage("Unify");
-        UserDatabase db = new UserDatabase();
-        db.nextAccountId();
+        // This is where the application starts to run
         HomePage home = new HomePage("Unify");
         home.setVisible(true);
 
@@ -51,7 +53,7 @@ public class User {
 
 
     /**
-     * Default constructor
+     * Default constructor method that initializes the user class
      * @param accountID
      * @param username
      * @param password
@@ -66,6 +68,11 @@ public class User {
         this.accountTotal = accountTotal;
     }
 
+    /**
+     * this updates the account total by getting the current number from the database
+     * and then running the set account total method so that it appears on screen
+     * @throws SQLException
+     */
     public void updateTotal() throws SQLException {
         UserDatabase database = new UserDatabase();
         setAccountTotal(database.getTotal(getAccountID()));
@@ -93,10 +100,13 @@ public class User {
     public String getSpendingPassword() { return spendingPassword; }
 
     /**
-     * Creates a random string of characters for the mnemonic phrase
+     * Creates a random string of characters from the alphabet inorder to create the mnemonic phrase
      * @return phrase: String
      */
     private String generateMnemonicPhrase(){
+        // creating a list of lowercase characters from the alphabet
+        // and then randomly selecting 5 letters to create the phrase
+
         String phrase = "";
         char[] alphabet = new char[26];
         int character = 65;
@@ -107,12 +117,13 @@ public class User {
         for (int i = 0; i < 5; i++){
             phrase = phrase + alphabet[random.nextInt(0,26)];
         }
-
         return phrase;
     }
 
     /**
      * Creates an address that has length of 8 characters
+     * this is done by generating a random number between 1000 and 5000 for two sections of the address
+     * the first section of the address will always be the user account #
      * @return address: String
      */
     private String generateAddress(){
@@ -122,6 +133,9 @@ public class User {
         String address = String.valueOf(accountID) + '.' + String.valueOf(random1) + '.' + String.valueOf(random2);
         return address;
     }
+    /**
+     * These next two methods were copied from a website https://coinmarketcap.com/api/documentation/v1/#
+     */
 
     /**
      * Gets the current cardano market price in USD

@@ -7,7 +7,7 @@ public class UserDatabase {
     public Statement statement;
 
     /**
-     * Initialize the connection to the User database
+     * This is the default constructor of the class that also establishes a connection to the database
      * @throws SQLException
      */
     public UserDatabase() throws SQLException {
@@ -17,13 +17,16 @@ public class UserDatabase {
     //TODO add a method to change a users password (low priority)
 
     /**
-     * Gets user's username and password
+     * This method returns the user based on the username and password
+     * if the information enterd is correct then the user will be returned otherwise there will be a SQL exception
      * @param username: String
      * @param password: String
      * @return new User
      * @throws SQLException
      */
     public User getUserInfo(String username, String password) throws SQLException {
+        // create the statement and then writing the string query to get the information
+        // then getting the result of the query in the result list and returning the user object
         statement = connection.createStatement();
         String query = "Select * from Users where userName = ? and password = ?";
         PreparedStatement prepStatement = connection.prepareStatement(query);
@@ -44,12 +47,17 @@ public class UserDatabase {
 
     /**
      * Authenticates the user with their username and password
+     * if the username and password are correct then the method will return true
+     * otherwise false
      * @param username: String
      * @param password: String
      * @return boolean
      * @throws SQLException
      */
     public boolean checkCredentials(String username, String password) throws SQLException {
+        // create the statement and then writing the string query to get the information
+        // then getting the result of the query in the result list
+        // then  comparing the username and password to see if they are correct
         statement = connection.createStatement();
         String query = "Select * from Users where userName = ? and password = ?";
         PreparedStatement prepStatement = connection.prepareStatement(query);
@@ -66,12 +74,14 @@ public class UserDatabase {
 
     /**
      * Creates a new unique accountID for the User
+     * we determine the new accountID by getting the largest account ID number and
+     * then adding one to it
      * @return newID: int
      * @throws SQLException
      */
     public int nextAccountId() throws SQLException {
         int newID;
-
+        // the query gets the largest account id number and then just adding one to it is the new accountID
         statement = connection.createStatement();
         String query = "SELECT MAX(accountID) FROM Users"; //Query to get the greatest User account IDs in the User DB
         PreparedStatement prep = connection.prepareStatement(query);
@@ -80,11 +90,11 @@ public class UserDatabase {
 
         //System.out.println(result.getInt(1));
         newID = result.getInt(1) + 1;
-        return newID;
+        return newID; // returning the new accoount id
     }
 
     /**
-     * Inserts a new User into the User database
+     * Inserts a new User into the User database when the user makes a new account
      * @param user: User
      * @throws SQLException
      */
