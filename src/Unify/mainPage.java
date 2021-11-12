@@ -57,6 +57,8 @@ public class mainPage extends JFrame{
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // this is the code for the refresh button
+                // this gets the account total and the current ADA price
                 if (e.getSource() == refreshButton){
                     try {
                         user.updateTotal();
@@ -69,7 +71,11 @@ public class mainPage extends JFrame{
                 }
             }
         });
-
+        /**
+         * this button is to commit to sending ADA to another users wallet
+         * the code gets the information that the user typed in and then tries to complete the transaction
+         * if there are any issues then it will print an error message
+         */
         sendButton.addActionListener(new ActionListener() { //when a button is pushed in the GUI
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,6 +134,12 @@ public class mainPage extends JFrame{
                 }
             }
         });
+
+        /**
+         * this action listener is for adding more ADA to your account
+         * the code does is that it gets the users input from the gui and then verifies that its
+         * a number and then adds the amount inputted to the account
+         */
 
         ADDButton.addActionListener(new ActionListener() {
             @Override
